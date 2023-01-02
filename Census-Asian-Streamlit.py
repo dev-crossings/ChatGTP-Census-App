@@ -39,8 +39,8 @@ def main():
     # Load the data
     df = load_data()
 
-    st.markdown("<style>h1 {font-size: 16pt; text-align:center;}</style><h1>% of CA county for Japanese or Filipino or Chinese demos</h1>", unsafe_allow_html=True)
-    st.markdown("<style>h2 {font-style: italic; font-size: 12pt; text-align:center;}</style><h2>*data derived from 2020 US Census ACS data</h2>", unsafe_allow_html=True)
+    st.markdown("<style>h1 {font-size: 16pt; text-align:center;}</style><h1>% of CA county for Japanese / Filipino / Chinese demos</h1>", unsafe_allow_html=True)
+    st.markdown("<style>h2 {font-style: italic; font-size: 12pt; text-align:center;}</style><h2>*data derived from 2018 US Census ACS data</h2>", unsafe_allow_html=True)
 
     # Sort the counties alphabetically
     df = df.sort_values("County")
