@@ -45,11 +45,7 @@ def main():
     # Sort the counties alphabetically
     df = df.sort_values("County")
 
-    if st.checkbox('Show raw data'):
-        st.subheader('Raw data')
-        st.write(df)
-
-    # Add a multiselect to select one or more counties
+     # Add a multiselect to select one or more counties
     county_names = st.multiselect("Select one or more counties: (Sacramento & San Francisco are pre-selected as an example)", df["County"].tolist(), ["Sacramento", "San Francisco"])
 
     # Filter the data for the selected counties
@@ -81,6 +77,10 @@ def main():
 
     # Display the plot in the app using st.pyplot
     st.pyplot(figure)
+
+    if st.checkbox('Show raw data'):
+        st.subheader('Raw data')
+        st.write(df)
 
 if __name__ == "__main__":
     main()
