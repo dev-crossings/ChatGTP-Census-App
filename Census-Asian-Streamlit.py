@@ -40,8 +40,16 @@ def main():
     # Sort the counties alphabetically
     df = df.sort_values("County")
 
+
+
     st.title("Percentage of CA county for Japanese or Filipino or Chinese populations")
     st.header("data derived from 2020 US Census ACS data")
+
+    if st.checkbox('Show raw data'):
+        st.subheader('Raw data')
+        st.write(df)
+
+
 
     # Add a multiselect to select one or more counties
     county_names = st.multiselect("Select one or more counties: (Sacramento & San Francisco are pre-selected as an example)", df["County"].tolist(), ["Sacramento", "San Francisco"])
@@ -81,9 +89,6 @@ def main():
 
     # Display the plot in the app using st.pyplot
     st.pyplot(figure)
-
-    st.subheader('Raw data')
-    st.write(df)
 
 
 if __name__ == "__main__":
