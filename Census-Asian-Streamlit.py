@@ -42,8 +42,9 @@ def main():
 
 
 
-    st.title("Percentage of CA county for Japanese or Filipino or Chinese populations")
-    st.header("data derived from 2020 US Census ACS data")
+    st.markdown("<style>h1 {font-size: 16pt;}</style><h1>% of CA county for Japanese or Filipino or Chinese demos</h1>", unsafe_allow_html=True)
+    st.markdown("<style>h2 {font-style: italic; font-size: 12pt;}</style><h2>data derived from 2020 US Census ACS data</h2>", unsafe_allow_html=True)
+
 
     if st.checkbox('Show raw data'):
         st.subheader('Raw data')
