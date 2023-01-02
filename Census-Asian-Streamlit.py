@@ -44,7 +44,7 @@ def main():
     st.header("data derived from 2020 US Census ACS data")
 
     # Add a multiselect to select one or more counties
-    county_names = st.multiselect("Select one or more counties:", df["County"].tolist(), ["Sacramento", "San Francisco"])
+    county_names = st.multiselect("Select one or more counties: (Sacramento & San Francisco are pre-selected as an example)", df["County"].tolist(), ["Sacramento", "San Francisco"])
 
     # Filter the data for the selected counties
     county_df = df[df["County"].isin(county_names)]
