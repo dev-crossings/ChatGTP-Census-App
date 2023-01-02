@@ -8,7 +8,9 @@ import requests
 @st.cache
 def load_data():
     # Make a request to the US Census API to get the data
-    response = requests.get("https://api.census.gov/data/2020/acs/acs5?get=NAME,B01001_001E,B06009_002E,B06009_003E,B06009_004E&for=county:*&in=state:06")
+    # https://api.census.gov/data/2018/acs/acs1/groups/B01003.html
+    # https://api.census.gov/data/2018/acs/acs1/groups/B02015.html
+    response = requests.get("https://api.census.gov/data/2018/acs/acs5?get=NAME,B01003_001E,B02015_011E,B02015_008E,B02015_007E&for=county:*&in=state:06")
 
 
     # Convert the response to JSON
@@ -18,8 +20,8 @@ def load_data():
     df = pd.DataFrame(data[1:], columns=data[0])
 
     # Clean the data
-    df = df[["NAME", "B01001_001E", "B06009_002E", "B06009_003E", "B06009_004E"]]
-    df.rename(columns={"NAME": "County", "B01001_001E": "Total population", "B06009_002E": "Japanese", "B06009_003E": "Filipino", "B06009_004E": "Chinese"}, inplace=True)
+    df = df[["NAME", "B01003_001E", "B02015_011E", "B02015_008E", "B02015_007E"]]
+    df.rename(columns={"NAME": "County", "B01003_001E": "Total population", "B02015_011E": "Japanese", "B02015_008E": "Filipino", "B02015_007E": "Chinese"}, inplace=True)
     df["County"] = df["County"].str.replace(" County,", "")  # Remove " County" from the county names
     df["County"] = df["County"].str.replace(" California", "")  # Remove " California" from the county names
     
@@ -33,14 +35,12 @@ def load_data():
 
     return df
 
-
-
 def main():
     # Load the data
     df = load_data()
 
-    st.markdown("<style>h1 {font-size: 16pt;}</style><h1>% of CA county for Japanese or Filipino or Chinese demos</h1>", unsafe_allow_html=True)
-    st.markdown("<style>h2 {font-style: italic; font-size: 12pt;}</style><h2>data derived from 2020 US Census ACS data</h2>", unsafe_allow_html=True)
+    st.markdown("<style>h1 {font-size: 16pt; text-align:center;}</style><h1>% of CA county for Japanese or Filipino or Chinese demos</h1>", unsafe_allow_html=True)
+    st.markdown("<style>h2 {font-style: italic; font-size: 12pt; text-align:center;}</style><h2>*data derived from 2020 US Census ACS data</h2>", unsafe_allow_html=True)
 
     # Sort the counties alphabetically
     df = df.sort_values("County")
@@ -72,7 +72,7 @@ def main():
         ax.text(p.get_x() + p.get_width()/2., p.get_height(), '{:.1%}'.format(p.get_height()), 
             ha="center", va="bottom", fontsize=11)
 
-    plot.set_title(f"Selected Ethnic Groups as % of California Counties")
+    plot.set_title(f"Selected Ethnic Group(s) as % of California Counties")
     plot.set_xlabel("County")
     plot.set_ylabel("Percentage of total population")
 
