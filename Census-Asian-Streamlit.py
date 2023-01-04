@@ -10,7 +10,7 @@ def load_data():
     # Make a request to the US Census API to get the data
     # https://api.census.gov/data/2018/acs/acs1/groups/B01003.html
     # https://api.census.gov/data/2018/acs/acs1/groups/B02015.html
-    response = requests.get("https://api.census.gov/data/2018/acs/acs5?get=NAME,B01003_001E,B02015_011E,B02015_008E,B02015_007E,B02015_009E&for=county:*&in=state:06")
+    response = requests.get("https://api.census.gov/data/2018/acs/acs5?get=NAME,B01003_001E,B02015_011E,B02015_008E,B02015_007E,B02015_009E,B02015_012E&for=county:*&in=state:06")
 
     # Convert the response to JSON
     data = response.json()
@@ -19,13 +19,13 @@ def load_data():
     df = pd.DataFrame(data[1:], columns=data[0])
 
     # Clean the data
-    df = df[["NAME", "B01003_001E", "B02015_011E", "B02015_008E", "B02015_007E", "B02015_009E"]]
-    df.rename(columns={"NAME": "County", "B01003_001E": "Total population", "B02015_011E": "Japanese", "B02015_008E": "Filipino", "B02015_007E": "Chinese", "B02015_009E": "Hmong"}, inplace=True)
+    df = df[["NAME", "B01003_001E", "B02015_011E", "B02015_008E", "B02015_007E", "B02015_009E", "B02015_012E"]]
+    df.rename(columns={"NAME": "County", "B01003_001E": "Total population", "B02015_011E": "Japanese", "B02015_008E": "Filipino", "B02015_007E": "Chinese", "B02015_009E": "Hmong", "B02015_012E": "Korean"}, inplace=True)
     df["County"] = df["County"].str.replace(" County,", "")  # Remove " County" from the county names
     df["County"] = df["County"].str.replace(" California", "")  # Remove " California" from the county names
 
     # define list of language groups
-    language_groups = ["Chinese", "Japanese", "Filipino", "Hmong"]
+    language_groups = ["Chinese", "Japanese", "Filipino", "Hmong", "Korean"]
 
     # convert language group columns to int
     for language_group in language_groups:
@@ -60,7 +60,7 @@ def main():
     county_df = df[df["County"].isin(county_names)]
 
     # Add a multiselect to select one or more ethnic groups
-    ethnic_groups = st.multiselect("Select one or more ethnic groups: (Japanese & Filipino are pre-selected as an example)", ["Japanese", "Filipino", "Chinese", "Hmong"], ["Japanese", "Filipino"])
+    ethnic_groups = st.multiselect("Select one or more ethnic groups: (Japanese & Filipino are pre-selected as an example)", ["Japanese", "Filipino", "Chinese", "Hmong", "Korean"], ["Japanese", "Filipino"])
 
     # Create a new column that represents the sum of the selected ethnic groups as a percentage of the total population
     county_df.loc[:, "Selected ethnic groups"] = (county_df[ethnic_groups].sum(axis=1) / county_df["Total population"]).values
