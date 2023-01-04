@@ -10,8 +10,7 @@ def load_data():
     # Make a request to the US Census API to get the data
     # https://api.census.gov/data/2018/acs/acs1/groups/B01003.html
     # https://api.census.gov/data/2018/acs/acs1/groups/B02015.html
-    response = requests.get("https://api.census.gov/data/2018/acs/acs5?get=NAME,B01003_001E,B02015_011E,B02015_008E,B02015_007E&for=county:*&in=state:06")
-
+    response = requests.get("https://api.census.gov/data/2018/acs/acs5?get=NAME,B01003_001E,B02015_011E,B02015_008E,B02015_007E,B02015_009E&for=county:*&in=state:06")
 
     # Convert the response to JSON
     data = response.json()
@@ -20,30 +19,39 @@ def load_data():
     df = pd.DataFrame(data[1:], columns=data[0])
 
     # Clean the data
-    df = df[["NAME", "B01003_001E", "B02015_011E", "B02015_008E", "B02015_007E"]]
-    df.rename(columns={"NAME": "County", "B01003_001E": "Total population", "B02015_011E": "Japanese", "B02015_008E": "Filipino", "B02015_007E": "Chinese"}, inplace=True)
+    df = df[["NAME", "B01003_001E", "B02015_011E", "B02015_008E", "B02015_007E", "B02015_009E"]]
+    df.rename(columns={"NAME": "County", "B01003_001E": "Total population", "B02015_011E": "Japanese", "B02015_008E": "Filipino", "B02015_007E": "Chinese", "B02015_009E": "Hmong"}, inplace=True)
     df["County"] = df["County"].str.replace(" County,", "")  # Remove " County" from the county names
     df["County"] = df["County"].str.replace(" California", "")  # Remove " California" from the county names
-    
-    df["Chinese"] = df["Chinese"].astype(int)
-    df["Japanese"] = df["Japanese"].astype(int)
-    df["Filipino"] = df["Filipino"].astype(int)
+
+    # define list of language groups
+    language_groups = ["Chinese", "Japanese", "Filipino", "Hmong"]
+
+    # convert language group columns to int
+    for language_group in language_groups:
+        df[language_group] = df[language_group].astype(int)
+
+    # convert total population column to int
     df["Total population"] = df["Total population"].astype(int)
-    df["Chinese_pct"] = df["Chinese"] / df["Total population"]
-    df["Japanese_pct"] = df["Japanese"] / df["Total population"]
-    df["Filipino_pct"] = df["Filipino"] / df["Total population"]
+
+    # calculate percentage of total population for each language group
+    for language_group in language_groups:
+        df[f"{language_group}_pct"] = df[language_group] / df["Total population"]
 
     return df
+
 
 def main():
     # Load the data
     df = load_data()
 
-    st.markdown("<style>h1 {font-size: 16pt; text-align:center;}</style><h1>% of CA county for Japanese / Filipino / Chinese demos</h1>", unsafe_allow_html=True)
+
+    st.markdown("<style>h1 {font-size: 16pt; text-align:center;}</style><h1>% of CA County for Select Asian Demos</h1>", unsafe_allow_html=True)
     st.markdown("<style>h2 {font-style: italic; font-size: 12pt; text-align:center;}</style><h2>*data derived from 2018 US Census ACS data</h2>", unsafe_allow_html=True)
 
     # Sort the counties alphabetically
     df = df.sort_values("County")
+
 
      # Add a multiselect to select one or more counties
     county_names = st.multiselect("Select one or more counties: (Sacramento & San Francisco are pre-selected as an example)", df["County"].tolist(), ["Sacramento", "San Francisco"])
@@ -52,10 +60,10 @@ def main():
     county_df = df[df["County"].isin(county_names)]
 
     # Add a multiselect to select one or more ethnic groups
-    ethnic_groups = st.multiselect("Select one or more ethnic groups: (Japanese & Filipino are pre-selected as an example)", ["Japanese", "Filipino", "Chinese"], ["Japanese", "Filipino"])
+    ethnic_groups = st.multiselect("Select one or more ethnic groups: (Japanese & Filipino are pre-selected as an example)", ["Japanese", "Filipino", "Chinese", "Hmong"], ["Japanese", "Filipino"])
 
     # Create a new column that represents the sum of the selected ethnic groups as a percentage of the total population
-    county_df["Selected ethnic groups"] = county_df[ethnic_groups].sum(axis=1) / county_df["Total population"]
+    county_df.loc[:, "Selected ethnic groups"] = (county_df[ethnic_groups].sum(axis=1) / county_df["Total population"]).values
 
     # Create a plot using Seaborn
     sns.set_style("darkgrid")
